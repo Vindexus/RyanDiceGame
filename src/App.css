@@ -1,0 +1,35 @@
+body, html {
+    background: #333;
+    color: #ccc;
+}
+
+body {
+    min-height: 100vh;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.enemy-card {
+    display: grid;
+    grid-template-columns: 80px 100px 1fr;
+}
+
+.enemy-card .enemy-name {
+    width: 8em;
+}
+
+.mana-light {
+    color: yellow;
+}
+
+.mana-ice {
+    color: deepskyblue;
+}
+
+.empty-mana {
+    opacity: 0.5;
+}
