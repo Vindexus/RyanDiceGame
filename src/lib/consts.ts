@@ -1,4 +1,5 @@
 import {EnemyType, EnemyTypeKey} from "./game";
+import {SkillType, SkillTypeKey} from "./skill";
 
 export const ENEMY_TYPES : Record<EnemyTypeKey, EnemyType> = {
 	goblin: {
@@ -13,4 +14,19 @@ export const ENEMY_TYPES : Record<EnemyTypeKey, EnemyType> = {
 		key: 'spider',
 		hp: 16,
 	}
+}
+
+export const SKILL_TYPES : Record<SkillTypeKey, SkillType> = {
+	fireball: {
+		name: 'Fireball',
+		cost: ['fire', 'fire', 'any'],
+		description: 'Deal fire damage to a target',
+		key: 'fireball',
+	},
+	ice_chains: {
+		key: 'ice_chains',
+		name: 'Ice Chains',
+		description: 'Deal ice damage to a target.',
+		cost: ['any', 'ice'],
+	},
 }

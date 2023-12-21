@@ -2,7 +2,7 @@ export type ManaType = 'fire' | 'ice' | 'nature' | 'steel' | 'light' | 'dark'
 
 export type ManaGlobe = {
 	type: ManaType
-	number?: number // Blank defaults to 1
+	number: number // Blank defaults to 1
 }
 
 export type ManaDieFace = {
@@ -12,6 +12,7 @@ export type ManaDieFace = {
 export type ManaDie = {
 	faces: ManaDieFace[]
 	activeFaceIdx: number
+	spent: boolean
 }
 
 export function newManaDie (types: ManaType[]) : ManaDie {
@@ -35,6 +36,7 @@ export function newManaDie (types: ManaType[]) : ManaDie {
 
 	return {
 		faces,
+		spent: false,
 		activeFaceIdx: -1,
 	}
 }
