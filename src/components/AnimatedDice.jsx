@@ -5,6 +5,8 @@ export default function AnimatedDice () {
   const canvasRef = useRef();
 
   useEffect(() => {
+    
+    console.log('USEEFFECT')
     const sizes = {
       width: canvasRef.current.clientWidth,
       height: canvasRef.current.clientHeight
@@ -84,12 +86,12 @@ export default function AnimatedDice () {
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
-    const dieSide1 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
-    const dieSide2 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
-    const dieSide3 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
-    const dieSide4 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
-    const dieSide5 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
-    const dieSide6 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial());
+    const dieSide1 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide2 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide3 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide4 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide5 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide6 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
 
     // Postition the planes to create a cube
     dieSide1.rotation.x = Math.PI * 0.5;
@@ -113,6 +115,8 @@ export default function AnimatedDice () {
     dieSide6.rotation.x = - Math.PI * 0.5;
 
     die.add(dieSide1, dieSide2, dieSide3, dieSide4, dieSide5, dieSide6);
+
+    die.position.y = 2;
 
     // Minimum roations to reach all sides FROM dieSide1:
     // die.rotation.y = Math.PI; // dieSide2
@@ -151,5 +155,5 @@ export default function AnimatedDice () {
     };
   }, []);
 
-  return <div style={{height: '200px'}}ref={canvasRef} />;
+  return <div style={{height: '200px'}} ref={canvasRef} />;
 }
