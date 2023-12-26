@@ -151,5 +151,5 @@ export default function AnimatedDice () {
     };
   }, []);
 
-  return <div style={{ width: '100%' }} ref={canvasRef} />;
+  return <div ref={canvasRef} />;
 }
