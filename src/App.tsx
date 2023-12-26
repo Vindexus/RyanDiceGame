@@ -136,6 +136,12 @@ function App() {
 								</div>
 							})}
 						</section>
+            <hr className={'divider'} />
+            <section>
+              <h3>Rolls</h3>
+              <canvas className={'webgl'}></canvas>
+              
+            </section>
 					</div>
 					<aside className={'border p-2 w-1/3 mt-3'}>
 						<h3 className={'text-lg'}>Logs</h3>
