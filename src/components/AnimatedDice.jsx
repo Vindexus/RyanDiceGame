@@ -5,6 +5,10 @@ export default function AnimatedDice () {
   const canvasRef = useRef();
 
   useEffect(() => {
+    if (canvasRef.current.children.length > 0) {
+      return;
+    };
+
     const sizes = {
       width: canvasRef.current.clientWidth,
       height: canvasRef.current.clientHeight
