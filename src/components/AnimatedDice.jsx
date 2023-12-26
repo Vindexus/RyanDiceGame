@@ -6,14 +6,14 @@ export default function AnimatedDice () {
 
   useEffect(() => {
     const sizes = {
-      width: window.innerWidth,
-      height: 100
+      width: canvasRef.current.clientWidth,
+      height: canvasRef.current.clientHeight
     };
 
     const handleResize = () => {
       // Update sizes
-      sizes.width = window.innerWidth;
-      sizes.height = window.innerHeight;
+      sizes.width = canvasRef.current.clientWidth;
+      sizes.height = canvasRef.current.clientHeight;
 
       // Update camera
       camera.aspect = sizes.width / sizes.height;
