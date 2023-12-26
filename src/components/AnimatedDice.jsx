@@ -5,8 +5,6 @@ export default function AnimatedDice () {
   const canvasRef = useRef();
 
   useEffect(() => {
-    
-    console.log('USEEFFECT')
     const sizes = {
       width: canvasRef.current.clientWidth,
       height: canvasRef.current.clientHeight
@@ -45,13 +43,13 @@ export default function AnimatedDice () {
     /**
      * Textures
      */
-    // const textureLoader = new THREE.TextureLoader();
-    // const fireTexture = textureLoader.load('/textures/fire.png');
-    // const iceTexture = textureLoader.load('/textures/ice.png');
-    // const shockTexture = textureLoader.load('/textures/earth.png');
-    // const earthTexture = textureLoader.load('/textures/shock.png');
-    // const deathTexture = textureLoader.load('/textures/magic.png');
-    // const magicTexture = textureLoader.load('/textures/death.png');
+    const textureLoader = new THREE.TextureLoader();
+    const fireTexture = textureLoader.load('../assets/textures/fire.png');
+    const iceTexture = textureLoader.load('../assets/textures/ice.png');
+    const shockTexture = textureLoader.load('../assets/textures/earth.png');
+    const earthTexture = textureLoader.load('../assets/textures/shock.png');
+    const deathTexture = textureLoader.load('../assets/textures/magic.png');
+    const magicTexture = textureLoader.load('../assets/textures/death.png');
 
     /**
      * Lights
