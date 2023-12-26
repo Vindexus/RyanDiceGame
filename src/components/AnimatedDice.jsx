@@ -44,12 +44,12 @@ export default function AnimatedDice () {
      * Textures
      */
     const textureLoader = new THREE.TextureLoader();
-    const fireTexture = textureLoader.load('../assets/textures/fire.png');
-    const iceTexture = textureLoader.load('../assets/textures/ice.png');
-    const shockTexture = textureLoader.load('../assets/textures/earth.png');
-    const earthTexture = textureLoader.load('../assets/textures/shock.png');
-    const deathTexture = textureLoader.load('../assets/textures/magic.png');
-    const magicTexture = textureLoader.load('../assets/textures/death.png');
+    const fireTexture = textureLoader.load('/textures/fire.png');
+    const iceTexture = textureLoader.load('/textures/ice.png');
+    const shockTexture = textureLoader.load('/textures/earth.png');
+    const earthTexture = textureLoader.load('/textures/shock.png');
+    const deathTexture = textureLoader.load('/textures/magic.png');
+    const magicTexture = textureLoader.load('/textures/death.png');
 
     /**
      * Lights
@@ -84,12 +84,12 @@ export default function AnimatedDice () {
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
-    const dieSide1 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
-    const dieSide2 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
-    const dieSide3 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
-    const dieSide4 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
-    const dieSide5 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
-    const dieSide6 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ color: 'red'}));
+    const dieSide1 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: fireTexture}));
+    const dieSide2 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: iceTexture}));
+    const dieSide3 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: earthTexture}));
+    const dieSide4 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: shockTexture}));
+    const dieSide5 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: magicTexture}));
+    const dieSide6 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: deathTexture}));
 
     // Postition the planes to create a cube
     dieSide1.rotation.x = Math.PI * 0.5;
