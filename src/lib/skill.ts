@@ -1,4 +1,4 @@
-import {ManaType} from "./mana";
+import {getDiceActiveManas, getDieActiveManas, ManaDie, ManaType} from "./mana";
 import {SKILL_TYPES} from "./consts";
 
 export type ManaCost = 'any' | ManaType
@@ -48,4 +48,44 @@ export function canCast (skill: Skill) : boolean {
 	}
 
 	return anyMana.length <= spendable.length
+}
+
+export function canAssignManaDiceToSkill (skill: Skill, dice: ManaDie[]) : boolean {
+	const mana = getDiceActiveManas(dice)
+	return canAssignManaToSkill(skill, mana)
+}
+
+export function canAssignManaToSkill (skill: Skill, mana: ManaType[]) : boolean {
+	let unallocated = [...mana]
+
+	// Check all the specific mana we have
+	for (let i = 0; i < skill.cost.length; i++) {
+		const cost = skill.cost[i]
+		if (cost === 'any') {
+			return
+		}
+		const foundIdx = unallocated.findIndex(x => x === cost)
+		if (foundIdx === -1) {
+			return false
+		}
+
+		unallocated.splice(foundIdx, 1)
+	}
+
+	const remaining = skill.cost.filter(x => x !== 'any')
+
+	return unallocated.length >= remaining.length
+}
+
+export function assignManaToSkill (skill: Skill, dice: ManaDie[]) {
+	const mana = getDiceActiveManas(dice)
+	if (!canAssignManaToSkill(skill, mana)) {
+		return
+	}
+
+	const added : ManaType[] = []
+	mana.forEach((m) => {
+		skill.paidMana.push(m)
+		added.push(m)
+	})
 }

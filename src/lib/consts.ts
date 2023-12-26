@@ -3,7 +3,7 @@ import {SkillType, SkillTypeKey} from "./skill";
 
 export const ENEMY_TYPES : Record<EnemyTypeKey, EnemyType> = {
 	goblin: {
-		damageDie: 'd4',
+		damageDie: 'd6',
 		name: 'Goblin',
 		key: 'goblin',
 		hp: 7,

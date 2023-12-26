@@ -2,7 +2,7 @@ export type ManaType = 'fire' | 'ice' | 'nature' | 'steel' | 'light' | 'dark'
 
 export type ManaGlobe = {
 	type: ManaType
-	number: number // Blank defaults to 1
+	number: number
 }
 
 export type ManaDieFace = {
@@ -22,7 +22,6 @@ export function newManaDie (types: ManaType[]) : ManaDie {
 			globes: [],
 		}
 	}
-	console.log('faces len', faces.length)
 	types.forEach((type, idx) => {
 		faces[idx] = {
 			globes: [
@@ -39,4 +38,23 @@ export function newManaDie (types: ManaType[]) : ManaDie {
 		spent: false,
 		activeFaceIdx: -1,
 	}
+}
+export function getDieActiveManas (die: ManaDie) : ManaType[] {
+	const mana :ManaType[] = []
+	die.faces[die.activeFaceIdx].globes.forEach((g) => {
+		for (let i = 1; i <= g.number; i++) {
+			mana.push(g.type)
+		}
+	})
+	return mana
+}
+
+export function getDiceActiveManas (dice: ManaDie[]) : ManaType[] {
+	return dice.reduce((mana: ManaType[], die) => {
+		const dieManas = getDieActiveManas(die)
+		dieManas.forEach((m) => {
+			mana.push(m)
+		})
+		return mana
+	}, [])
 }
