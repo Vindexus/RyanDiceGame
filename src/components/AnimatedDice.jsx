@@ -1,8 +1,16 @@
-import * as THREE from 'three';
 import { useEffect, useRef } from 'react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 export default function AnimatedDice () {
   const canvasRef = useRef();
+
+  // Constants
+  const defaultCameraX = 1;
+  const defaultCameraY = 2.3;
+  const defaultCameraZ = 1;
+  const floorWidth = 10;
+  const dieWidth = 1;
 
   useEffect(() => {
     if (canvasRef.current.children.length > 0) {
@@ -31,9 +39,14 @@ export default function AnimatedDice () {
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 25);
-    camera.position.y = 2.5;
-    camera.position.z = 2;
+    camera.position.x = defaultCameraX;
+    camera.position.y = defaultCameraY;
+    camera.position.z = defaultCameraZ;
     scene.add(camera);
+
+    // Controls
+    const controls = new OrbitControls(camera, canvasRef.current);
+    controls.enableDamping = true;
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(sizes.width, sizes.height);
@@ -70,11 +83,6 @@ export default function AnimatedDice () {
     /**
      * OBJECTS
      */
-    // Constants
-    const floorWidth = 10;
-    const dieWidth = 1;
-
-    // const dieSides = 6;
 
     /**
      * Dice
@@ -118,8 +126,6 @@ export default function AnimatedDice () {
 
     die.add(dieSide1, dieSide2, dieSide3, dieSide4, dieSide5, dieSide6);
 
-    die.position.y = 2;
-
     // Minimum roations to reach all sides FROM dieSide1:
     // die.rotation.y = Math.PI; // dieSide2
     // die.rotation.y = Math.PI * 0.5; // dieSide3
@@ -142,6 +148,9 @@ export default function AnimatedDice () {
 
     const animate = () => {
       // const elapsedTime = clock.getElapsedTime()
+
+      // Update controls
+      controls.update()
 
       // Render
       renderer.render(scene, camera)
