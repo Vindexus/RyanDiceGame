@@ -89,7 +89,7 @@ export function newGame () : Game {
 		over: false,
 		logs: [],
 		manaDice: [
-			newManaDie(['fire', 'fire', 'fire', 'ice']),
+			newManaDie(['ice', 'fire', 'ice', 'ice']),
 			newManaDie(['ice', 'ice', 'ice', 'light']),
 			newManaDie(['light', 'light', 'light', 'fire']),
 		],

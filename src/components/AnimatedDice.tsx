@@ -1,31 +1,53 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import {Texture} from "three";
 
-export default function AnimatedDice () {
-  const canvasRef = useRef();
+type Face = {
+	texture: Texture
+}
+
+export type Props = {
+	faces?: string[]
+}
+
+
+export default function AnimatedDice (props: Props) {
+	const icons = props.faces || ['fire', 'ice', 'shock', 'death', 'earth', 'magic']
+
+	while (icons.length < 6) {
+		icons.push('uncertainty') // TODO: Get a blank one
+	}
+
+  const canvasRef = useRef<HTMLDivElement>();
 
   // Constants
   const defaultCameraX = 1;
-  const defaultCameraY = 2.3;
+  const defaultCameraY = 1.5;
   const defaultCameraZ = 1;
   const floorWidth = 10;
   const dieWidth = 1;
 
   useEffect(() => {
-    if (canvasRef.current.children.length > 0) {
+  	const div = canvasRef.current
+
+  	if (!div) {
+  		return
+		}
+
+    if (div.children.length > 0) {
       return;
     };
 
     const sizes = {
-      width: canvasRef.current.clientWidth,
-      height: canvasRef.current.clientHeight
+      width: div.clientWidth,
+      height: div.clientHeight
     };
 
     const handleResize = () => {
       // Update sizes
-      sizes.width = canvasRef.current.clientWidth;
-      sizes.height = canvasRef.current.clientHeight;
+      sizes.width = div.clientWidth;
+      sizes.height = div.clientHeight;
 
       // Update camera
       camera.aspect = sizes.width / sizes.height;
@@ -45,15 +67,15 @@ export default function AnimatedDice () {
     scene.add(camera);
 
     // Controls
-    const controls = new OrbitControls(camera, canvasRef.current);
+    const controls = new OrbitControls(camera, div);
     controls.enableDamping = true;
 
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    renderer.setSize(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-    canvasRef.current.appendChild(renderer.domElement);
+    renderer.setSize(div.clientWidth, div.clientHeight);
+    div.appendChild(renderer.domElement);
 
     window.addEventListener('resize', handleResize);
 
@@ -61,12 +83,11 @@ export default function AnimatedDice () {
      * Textures
      */
     const textureLoader = new THREE.TextureLoader();
-    const fireTexture = textureLoader.load('/textures/fire.png');
-    const iceTexture = textureLoader.load('/textures/ice.png');
-    const shockTexture = textureLoader.load('/textures/earth.png');
-    const earthTexture = textureLoader.load('/textures/shock.png');
-    const deathTexture = textureLoader.load('/textures/magic.png');
-    const magicTexture = textureLoader.load('/textures/death.png');
+		const faces : Face[] = icons.map((fd) : Face => {
+			return {
+				texture: textureLoader.load('/textures/' + fd + '.png'),
+			}
+		})
 
     /**
      * Lights
@@ -96,35 +117,33 @@ export default function AnimatedDice () {
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
-    const dieSide1 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: fireTexture}));
-    const dieSide2 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: iceTexture}));
-    const dieSide3 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: earthTexture}));
-    const dieSide4 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: shockTexture}));
-    const dieSide5 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: magicTexture}));
-    const dieSide6 = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: deathTexture}));
+    const meshes = faces.map((face) => {
+    	const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
+    	return side
+		})
 
     // Postition the planes to create a cube
-    dieSide1.rotation.x = Math.PI * 0.5;
+    meshes[0].rotation.x = Math.PI * 0.5;
 
-    dieSide2.position.y = dieWidth * 0.5;
-    dieSide2.position.z = - dieWidth * 0.5;
-    dieSide2.rotation.y = Math.PI;
+    meshes[1].position.y = dieWidth * 0.5;
+    meshes[1].position.z = - dieWidth * 0.5;
+    meshes[1].rotation.y = Math.PI;
 
-    dieSide3.position.y = dieWidth * 0.5;
-    dieSide3.position.z = dieWidth * 0.5;
+    meshes[2].position.y = dieWidth * 0.5;
+    meshes[2].position.z = dieWidth * 0.5;
 
-    dieSide4.position.y = dieWidth * 0.5;
-    dieSide4.position.x = - dieWidth * 0.5;
-    dieSide4.rotation.y = - Math.PI * 0.5;
+    meshes[3].position.y = dieWidth * 0.5;
+    meshes[3].position.x = - dieWidth * 0.5;
+    meshes[3].rotation.y = - Math.PI * 0.5;
 
-    dieSide5.position.y = dieWidth * 0.5;
-    dieSide5.position.x = dieWidth * 0.5;
-    dieSide5.rotation.y = Math.PI * 0.5;
+    meshes[4].position.y = dieWidth * 0.5;
+    meshes[4].position.x = dieWidth * 0.5;
+    meshes[4].rotation.y = Math.PI * 0.5;
 
-    dieSide6.position.y = dieWidth;
-    dieSide6.rotation.x = - Math.PI * 0.5;
+    meshes[5].position.y = dieWidth;
+    meshes[5].rotation.x = - Math.PI * 0.5;
 
-    die.add(dieSide1, dieSide2, dieSide3, dieSide4, dieSide5, dieSide6);
+    die.add(...meshes);
 
     // Minimum roations to reach all sides FROM dieSide1:
     // die.rotation.y = Math.PI; // dieSide2
@@ -139,12 +158,12 @@ export default function AnimatedDice () {
      * Floor
      */
 
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
+    /*const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
 
     floor.position.y = -1;
-    floor.rotation.x = - Math.PI * 0.5;
+    floor.rotation.x = - Math.PI * 0.5;*/
 
-    scene.add(floor);
+    //scene.add(floor);
 
     const animate = () => {
       // const elapsedTime = clock.getElapsedTime()
@@ -166,5 +185,5 @@ export default function AnimatedDice () {
     };
   }, []);
 
-  return <div style={{height: '200px'}} ref={canvasRef} />;
+  return <div style={{height: '100%', width: '100%'}} ref={canvasRef} />;
 }

@@ -1,4 +1,5 @@
 import {ManaDie, ManaDieFace, ManaType} from "../lib/mana";
+import AnimatedDice from "./AnimatedDice";
 
 type ManaDieProps = {
 	die: ManaDie
@@ -9,9 +10,14 @@ type ManaDieProps = {
 export default function ManaDieC (props: ManaDieProps) {
 	const {die, selected, onClick} = props
 	const activeFace = die.activeFaceIdx >= 0 ? die.faces[die.activeFaceIdx] : null
+
+	const faces = die.faces.filter(x => x.globes.length).map((f) => {
+		return f.globes[0].type
+	})
+
 	return <div onClick={() => onClick()} className={`mana-die w-32 h-32 tw-border-solid border-2 flex flex-col justify-between mana-die-${selected ? 'selected' : ''} ${die.spent ? 'mana-die-spent' : ''}`}>
 		<div className={'h-2/3 flex justify-center align-center'} style={{fontSize: '75px'}}>
-			{activeFace ? <ManaDieFaceC face={activeFace} /> : <>&nbsp;</>}
+			<AnimatedDice faces={faces} />
 		</div>
 		<div className={'flex justify-around'}>
 			{die.faces.map((face, idx) => {
@@ -22,6 +28,7 @@ export default function ManaDieC (props: ManaDieProps) {
 }
 
 function getManaSymbol (type: ManaType) {
+	return <img src={'/textures/' + type + '.png'} />
 	switch (type) {
 		case "fire":
 			return "🔥";
@@ -31,6 +38,10 @@ function getManaSymbol (type: ManaType) {
 			return "🌳";
 		case "light":
 			return "☀";
+		case "dark":
+			return "💀";
+		case "steel":
+			return "🤖";
 	}
 }
 
