@@ -17,7 +17,7 @@ export default function ManaDieC (props: ManaDieProps) {
 
 	return <div onClick={() => onClick()} className={`mana-die w-32 h-32 tw-border-solid border-2 flex flex-col justify-between mana-die-${selected ? 'selected' : ''} ${die.spent ? 'mana-die-spent' : ''}`}>
 		<div className={'h-2/3 flex justify-center align-center'} style={{fontSize: '75px'}}>
-			<AnimatedDice faces={faces} />
+			<AnimatedDice die={die} />
 		</div>
 		<div className={'flex justify-around'}>
 			{die.faces.map((face, idx) => {

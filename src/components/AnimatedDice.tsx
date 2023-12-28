@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {Texture} from "three";
-import { ManaDie, ManaDieFace } from '../lib/mana';
+import { ManaDie } from '../lib/mana';
 
 type Face = {
 	texture: Texture
@@ -13,11 +13,13 @@ export type Props = {
 }
 
 export default function AnimatedDice (props: Props) {
-	const icons = props.faces || ['fire', 'ice', 'shock', 'death', 'earth', 'magic']
-  const [activeFace, setActiveFace] = useState<ManaDieFace>();
+	const faces = props.die.faces;
+  console.log('faces: ', faces);
+  // const rollResult = props.die.activeFaceIdx;
+  // const [activeFace, setActiveFace] = useState<ManaDieFace>();
 
-	while (icons.length < 6) {
-		icons.push('uncertainty') // TODO: Get a blank one
+	while (faces.length < 6) {
+		faces.push('uncertainty') // TODO: Get a blank one
 	}
 
   const canvasRef = useRef<HTMLDivElement>();
@@ -33,7 +35,7 @@ export default function AnimatedDice (props: Props) {
     const div = canvasRef.current
 
     if (!div) {
-      return
+      return;
 		}
 
     if (div.children.length > 0) {
@@ -84,11 +86,16 @@ export default function AnimatedDice (props: Props) {
      * Textures
      */
     const textureLoader = new THREE.TextureLoader();
-		const faces : Face[] = icons.map((fd) : Face => {
-			return {
-				texture: textureLoader.load('/textures/' + fd + '.png'),
-			}
-		})
+		const faceTextures : Face[] = faces.filter((face) => {
+      face.globes.length > 0
+      }).map((fd) : Face => {
+        console.log('fd:', fd);
+        const texturePath = '/textures/' + fd.globes[0].type + '.png'
+        console.log('texturePath: ', texturePath);
+		  	return {
+		  		texture: textureLoader.load('/textures/' + fd.globes[0].type + '.png'),
+		  	}
+		  })
 
     /**
      * Lights
@@ -118,10 +125,14 @@ export default function AnimatedDice (props: Props) {
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
-    const meshes = faces.map((face) => {
+    const meshes = faceTextures.map((face) => {
+      console.log('meshes.face: ', face);
       const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
       return side
 		})
+    
+    console.log('faceTextures: ', faceTextures)
+    // console.log('meshes: ', meshes)
 
     // Postition the planes to create a cube
     meshes[0].rotation.x = Math.PI * 0.5;
@@ -186,6 +197,15 @@ export default function AnimatedDice (props: Props) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (rollResult >= 0) {
+  //     console.log('rollResult: ', rollResult);
+  //   }
+  //   if (rollResult === 0) {
+
+  //   }
+  // }, [rollResult]);
 
   return <div style={{height: '100%', width: '100%'}} ref={canvasRef} />;
 }
