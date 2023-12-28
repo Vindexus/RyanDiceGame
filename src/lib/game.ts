@@ -1,17 +1,22 @@
 import {Draft, produce} from "immer";
 import {ENEMY_TYPES} from "./consts";
 import {getRandomInt, rollDie} from "./random";
-import {ManaDie, newManaDie} from "./mana";
-import {newSkill, Skill} from "./skill";
+import {ManaDie, ManaType, newManaDie} from "./mana";
+import {canAssignManaToSkill, newSkill, Skill} from "./skill";
 
 export type Game = {
 	player: Player
 	enemies: Enemy[]
 	roundNumber: number
-	logs: string[]
+	logs: Log[]
 	over: boolean
 	manaDice: ManaDie[]
 	skills: Skill[]
+}
+
+export type Log = {
+	id: number
+	text: string
 }
 
 export type Combatant = {
@@ -39,7 +44,7 @@ export type Enemy = Combatant & {
 	type: EnemyType
 	id: string
 	damageDie: DieSize
-	roll: null | number
+	damageRoll: null | number
 }
 
 
@@ -47,11 +52,18 @@ export function dealPlayerDamage (draft: Draft<Game>, dmg: number) {
 	draft.player.hp = Math.max(0, draft.player.hp - dmg)
 
 	const dead = draft.player.hp <= 0
-	draft.logs.push(`Player lost ${dmg}${dead ? ' and DIED!' : '.'}`)
+	addLog(draft, `Player lost ${dmg}${dead ? ' and DIED!' : '.'}`)
 
 	if (dead) {
 		draft.over = true
 	}
+}
+
+function addLog (draft: Draft<Game>, msg: string) {
+	draft.logs.unshift({
+		id: draft.logs.length,
+		text: msg,
+	})
 }
 
 function newCombatant (name: string, hp: number) : Combatant {
@@ -64,16 +76,16 @@ function newCombatant (name: string, hp: number) : Combatant {
 
 
 let ids = 0
-function newEnemy (typeKey: EnemyTypeKey) : Enemy {
+function newEnemy (typeKey: EnemyTypeKey, extraName?: string) : Enemy {
 	const type = ENEMY_TYPES[typeKey]
 	return {
 		id: 'm_' + (++ids),
-		name: type.name,
+		name: type.name + (extraName ? (' '+extraName) : ''),
 		type,
 		hp: type.hp,
 		maxHP: type.hp,
 		damageDie: type.damageDie,
-		roll: null,
+		damageRoll: null,
 	}
 }
 
@@ -82,8 +94,8 @@ export function newGame () : Game {
 		player: newCombatant('Player 1', 30),
 		enemies: [
 			newEnemy('spider'),
-			newEnemy('goblin'),
-			newEnemy('goblin'),
+			newEnemy('goblin', '1'),
+			newEnemy('goblin', '2'),
 		],
 		roundNumber: 0,
 		over: false,
@@ -103,7 +115,8 @@ export function newGame () : Game {
 export function rollEnemyDice (game: Game) : Game {
 	return produce<Game>(game,(draft: Draft<Game>) => {
 		draft.enemies.forEach((e) => {
-			e.roll = rollDie(new Date().toISOString(), e.damageDie)
+			e.damageRoll = rollDie(new Date().toISOString(), e.damageDie)
+			addLog(draft, e.name + ' rolled a ' + e.damageRoll)
 		})
 	})
 }
@@ -112,8 +125,12 @@ export function rerollEnemyDice (game: Game) : Game {
 	return produce<Game>(game,(draft: Draft<Game>) => {
 		draft.enemies.forEach((e) => {
 			const newer = rollDie(new Date().toISOString(), e.damageDie)
-			if (newer > e.roll) {
-				e.roll = newer
+			if (newer > e.damageRoll) {
+				e.damageRoll = newer
+				addLog(draft, e.name + ' rerolled up to ' + newer)
+			}
+			else {
+				addLog(draft, e.name + ' stays at ' + e.damageRoll + ' after rerolling a ' + newer)
 			}
 		})
 	})
@@ -125,7 +142,6 @@ export function rerollEnemyDice (game: Game) : Game {
  * @param manaDiceIndices
  */
 export function rerollSelectedManaDice (game: Game, manaDiceIndices: number[]) : Game {
-	// TODO: Have a number of rerolls to subtract
 	const updated = rerollEnemyDice(game)
 	return rollSelectedManaDice(updated, manaDiceIndices)
 }
@@ -137,6 +153,7 @@ export function rollSelectedManaDice (game: Game, manaDiceIndices: number[]): Ga
 			const activeIdx = getRandomInt(Math.random().toString(), 0, md.faces.length-1)
 			md.activeFaceIdx = activeIdx
 		})
+		addLog(draft, `Rerolled ${manaDiceIndices.length === draft.manaDice.length ? 'all' : manaDiceIndices.length} mana dice`)
 	})
 }
 
@@ -145,27 +162,25 @@ export function rollManaDice (game: Game) : Game {
 }
 
 export function newRound (game: Game) : Game {
-	const updated = rollManaDice(rollEnemyDice(game))
-	return produce<Game>(updated, (draft: Draft<Game>) => {
+	const updated = produce<Game>(game, (draft: Draft<Game>) => {
+		draft.roundNumber += 1
+		addLog(draft, `Started round ${draft.roundNumber}`)
 		draft.manaDice.forEach((md) => {
 			md.spent = false
 		})
-		draft.roundNumber += 1
 	})
+	return rollManaDice(rollEnemyDice(updated))
 }
 
 export function assignMana (game: Game, skillId: string, selectedManaIndices: number[]) : Game {
 	return produce<Game>(game, (draft: Draft<Game>) => {
 		const skill = draft.skills.find(x => x.id === skillId)!
-		selectedManaIndices.forEach((idx) => {
-			const die = draft.manaDice[idx]
-			die.spent = true
-
-			die.faces[die.activeFaceIdx].globes.forEach((g) => {
-				for (let i = 1; i <= g.number; g++) {
-					skill.paidMana.push(g.type)
-				}
-			})
+		const dice = selectedManaIndices.map((idx) => {
+			return draft.manaDice[idx]
 		})
+		if (!canAssignManaToSkill(skill, dice)) {
+			return
+		}
+		addLog(draft, `Assigned ${dice}`)
 	})
 }
