@@ -139,10 +139,6 @@ function App() {
 							})}
 						</section>
             <hr className={'divider'} />
-            <section>
-              <h3>Rolls</h3>
-                <AnimatedDice />
-            </section>
 					</div>
 					<aside className={'border p-2 w-1/3 mt-3'}>
 						<Logs game={game} />
