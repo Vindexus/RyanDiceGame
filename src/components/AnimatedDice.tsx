@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {Texture} from "three";
-import { ManaDie } from '../lib/mana';
+import { ManaDie, ManaDieFace } from '../lib/mana';
 
 type Face = {
 	texture: Texture
@@ -14,6 +14,7 @@ export type Props = {
 
 export default function AnimatedDice (props: Props) {
 	const icons = props.faces || ['fire', 'ice', 'shock', 'death', 'earth', 'magic']
+  const [activeFace, setActiveFace] = useState<ManaDieFace>();
 
 	while (icons.length < 6) {
 		icons.push('uncertainty') // TODO: Get a blank one
