@@ -1,13 +1,13 @@
-import { expect, test } from 'vitest'
+import {expect, test} from 'vitest'
 import {
 	assignManaToSkill,
 	canAssignManaDiceToSkill,
 	canAssignManaToSkill,
-	canCast, getSkillRemainingCost,
+	canCast,
+	getSkillRemainingCost,
 	ManaCost,
 	newSkill
 } from "../lib/skill";
-import {exp} from "three/examples/jsm/nodes/math/MathNode";
 import {ManaType, newManaDie} from "../lib/mana";
 
 function getTestFireball () {

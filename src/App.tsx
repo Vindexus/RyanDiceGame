@@ -1,20 +1,14 @@
 import {useEffect, useState} from 'react'
 import './App.css'
-import {
-	Game,
-	newGame,
-	newRound,
-	rerollEnemyDice,
-	rerollSelectedManaDice,
-	rollEnemyDice,
-	rollManaDice, assignMana
-} from "./lib/game";
+import {assignMana, Game, newGame, newRound, rerollSelectedManaDice, rollEnemyDice} from "./lib/game";
 import EnemyCard from "./components/EnemyCard";
 import CombatantHeader from "./components/CombatantHeader";
 import ManaDieC, {ManaIcon} from "./components/ManaDie";
 import AnimatedDice from "./components/AnimatedDice";
 import {canCast} from "./lib/skill";
 import Logs from "./components/Logs";
+import {ManaType} from "./lib/mana";
+
 rollEnemyDice
 const styles = {
 	btn: `rounded bg-teal-800 text-sm px-4 py-2 bg-gray ms-1`
@@ -124,12 +118,13 @@ function App() {
 										<h3 className={'text-lg font-bold'}>{type.name}</h3>
 										<div className={'font-semibold'}>
 											<div className={'flex'}>
-												{skill.cost.map((m, idx) => {
+												{skill.cost.map((mc, idx) => {
+													const m = mc as ManaType
 													return <span className={'mana-cost'} key={idx}>
-														{m === 'any' ? 'x' : <ManaIcon type={m} />}
+														{mc === 'any' ? 'x' : <ManaIcon type={m} />}
 													</span>
-												})} ({skill.paidMana.length
-													? skill.paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
+												})} ({paidMana.length
+													? paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
 													: <em>no mana allocated</em>})
 											</div>
 										</div>

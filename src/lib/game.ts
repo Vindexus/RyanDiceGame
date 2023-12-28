@@ -1,8 +1,8 @@
 import {Draft, produce} from "immer";
 import {ENEMY_TYPES} from "./consts";
 import {getRandomInt, rollDie} from "./random";
-import {ManaDie, ManaType, newManaDie} from "./mana";
-import {canAssignManaDiceToSkill, canAssignManaToSkill, newSkill, Skill} from "./skill";
+import {ManaDie, newManaDie} from "./mana";
+import {canAssignManaDiceToSkill, newSkill, Skill} from "./skill";
 
 export type Game = {
 	player: Player
@@ -125,7 +125,7 @@ export function rerollEnemyDice (game: Game) : Game {
 	return produce<Game>(game,(draft: Draft<Game>) => {
 		draft.enemies.forEach((e) => {
 			const newer = rollDie(new Date().toISOString(), e.damageDie)
-			if (newer > e.damageRoll) {
+			if (e.damageRoll === null || newer > e.damageRoll) {
 				e.damageRoll = newer
 				addLog(draft, e.name + ' rerolled up to ' + newer)
 			}

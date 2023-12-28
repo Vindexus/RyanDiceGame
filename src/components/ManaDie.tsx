@@ -9,7 +9,6 @@ type ManaDieProps = {
 
 export default function ManaDieC (props: ManaDieProps) {
 	const {die, selected, onClick} = props
-	const activeFace = die.activeFaceIdx >= 0 ? die.faces[die.activeFaceIdx] : null
 
 	const faces = die.faces.filter(x => x.globes.length).map((f) => {
 		return f.globes[0].type
@@ -60,7 +59,7 @@ function ManaDieFaceC ({face, highlight}: {face: ManaDieFace, highlight: boolean
 	</div>
 }
 
-export function ManaIcon ({type}: ManaType) {
+export function ManaIcon ({type}: {type: ManaType}) {
 	return <span className={'mana-' + type}>
 		{getManaSymbol(type)}
 	</span>

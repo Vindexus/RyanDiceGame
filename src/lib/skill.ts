@@ -1,4 +1,4 @@
-import {getDiceActiveManas, getDieActiveManas, ManaDie, ManaType} from "./mana";
+import {getDiceActiveManas, ManaDie, ManaType} from "./mana";
 import {SKILL_TYPES} from "./consts";
 
 export type ManaCost = 'any' | ManaType

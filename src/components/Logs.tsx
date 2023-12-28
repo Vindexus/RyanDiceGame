@@ -1,4 +1,4 @@
-import {AnimatePresence, motion, stagger} from "framer-motion"
+import {AnimatePresence, motion} from "framer-motion"
 import {Game} from "../lib/game";
 
 type Props = {
