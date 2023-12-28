@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {Texture} from "three";
-import { ManaDieFace } from '../lib/mana';
+import { ManaDie } from '../lib/mana';
 
 type Face = {
 	texture: Texture
 }
 
 export type Props = {
-	faces: ManaDieFace[]
+	die: ManaDie
 }
 
 export default function AnimatedDice (props: Props) {
@@ -22,9 +22,9 @@ export default function AnimatedDice (props: Props) {
   const canvasRef = useRef<HTMLDivElement>();
 
   // Constants
-  const defaultCameraX = 1;
-  const defaultCameraY = 1.5;
-  const defaultCameraZ = 1;
+  const defaultCameraX = 0;
+  const defaultCameraY = 0;
+  const defaultCameraZ = 1.5;
   // const floorWidth = 10;
   const dieWidth = 1;
 
@@ -145,6 +145,8 @@ export default function AnimatedDice (props: Props) {
 
     die.add(...meshes);
 
+    die.position.y = -0.5;
+
     // Minimum roations to reach all sides FROM dieSide1:
     // die.rotation.y = Math.PI; // dieSide2
     // die.rotation.y = Math.PI * 0.5; // dieSide3
@@ -155,6 +157,10 @@ export default function AnimatedDice (props: Props) {
     scene.add(die);
 
     /**
+     * Rolling Animations
+    /**
+
+
      * Floor
      */
 
