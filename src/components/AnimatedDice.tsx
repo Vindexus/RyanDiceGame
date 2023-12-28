@@ -148,27 +148,22 @@ export default function AnimatedDice (props: Props) {
 
     die.position.y = -0.5;
 
-    // Minimum roations to reach all sides FROM dieSide1:
-    // die.rotation.y = Math.PI; // dieSide2
-    // die.rotation.y = Math.PI * 0.5; // dieSide3
-    // die.rotation.y = Math.PI * 2; // dieSide4
-    // die.rotation.y = - Math.PI * 0.5; // dieSide5
-    // die.rotation.x = Math.PI * 0.5; // dieSide6
+    // Minimum roations to reach all sides FROM meshes[0]
+    // die.rotation.y = Math.PI; // meshes[1]
+    // die.rotation.y = Math.PI * 0.5; // meshes[2]
+    // die.rotation.y = Math.PI * 2; // meshes[3]
+    // die.rotation.y = - Math.PI * 0.5; // meshes[4]
+    // die.rotation.x = Math.PI * 0.5; // meshes[5]
 
     scene.add(die);
 
     /**
-     * Rolling Animations
-    /**
-
-
      * Floor
-     */
+    */
+    // const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
 
-    /*const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
-
-    floor.position.y = -1;
-    floor.rotation.x = - Math.PI * 0.5;*/
+    // floor.position.y = -1;
+    // floor.rotation.x = - Math.PI * 0.5;
 
     //scene.add(floor);
 
