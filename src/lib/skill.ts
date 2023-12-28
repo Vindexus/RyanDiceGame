@@ -1,9 +1,9 @@
-import {getDiceActiveManas, getDieActiveManas, ManaDie, ManaType} from "./mana";
+import {getDiceActiveManas, ManaDie, ManaType} from "./mana";
 import {SKILL_TYPES} from "./consts";
 
 export type ManaCost = 'any' | ManaType
 
-export type SkillTypeKey = 'fireball' | 'ice_chains'
+export type SkillTypeKey = 'fireball' | 'ice_chains' | 'dawn_shield'
 
 export type SkillType = {
 	key: SkillTypeKey
@@ -32,57 +32,120 @@ export function newSkill (key: SkillTypeKey) : Skill {
 }
 
 export function canCast (skill: Skill) : boolean {
-	const anyMana = skill.cost.filter(x => x === 'any')
-	const specificMana = skill.cost.filter(x => x !== 'any')
-
-	const spendable = [...skill.paidMana]
-	for (let i = 0; i < specificMana.length; i++) {
-		const typeNeeded = specificMana[i]
-		const found = spendable.findIndex(x => x === typeNeeded)
-		if (found >= 0) {
-			spendable.splice(found, 1)
-		}
-		else {
-			return false
-		}
-	}
-
-	return anyMana.length <= spendable.length
+	return getSkillRemainingCost(skill).length === 0
 }
 
 export function canAssignManaDiceToSkill (skill: Skill, dice: ManaDie[]) : boolean {
+	console.log('----')
+	console.log('can?', skill, dice)
+	const spent = dice.filter(x => x.spent)
+	if (spent.length) {
+		console.log('already spent some of the dice')
+		return false
+	}
+
+	const missingFaces = dice.filter(x => x.activeFaceIdx === -1)
+	console.log('missing faces', missingFaces)
+	if (missingFaces.length) {
+		console.log('some of these dice have not been rolled')
+		return false
+	}
+
 	const mana = getDiceActiveManas(dice)
-	return canAssignManaToSkill(skill, mana)
+	console.log('mana', mana)
+	const canAssignBasedOnMana = canAssignManaToSkill(skill, mana)
+	console.log('canAssignBasedOnMana', canAssignBasedOnMana, mana)
+	return canAssignBasedOnMana
+}
+
+export function getSkillSpecificManaCosts (skill: Skill) : ManaCost[] {
+	return skill.cost.filter(x => x !== 'any')
+}
+
+export function getSkillGenericManaCosts (skill: Skill) : ManaCost[] {
+	return skill.cost.filter(x => x === 'any')
+}
+
+/**
+ * Returns an array of the costs that the skill needs to be have paid for
+ * A skill with a cost of fire,ice,any,any that has had "ice,earth" paid
+ * to it should return "fire,any"
+ * @param skill
+ */
+export function getSkillRemainingCost (skill: Skill) : ManaCost[] {
+	// Put all the paid mana into a list that we will change as we mark off
+	// certain costs as paid
+	const uncountedPaidMana : ManaType[] = [...skill.paidMana]
+	const remainingCost : ManaCost[] = []
+
+	const specificCosts = getSkillSpecificManaCosts(skill)
+	specificCosts.forEach((cost) => {
+		const idx = uncountedPaidMana.findIndex(x => x === cost)
+
+		if (idx >= 0) {
+			uncountedPaidMana.splice(idx, 1)
+		}
+		else {
+			remainingCost.push(cost)
+		}
+	})
+
+	// Remove generic costs based on how much mana we have remaining
+	// to count that wasn't used for specific mana
+	const genericCosts = getSkillGenericManaCosts(skill)
+	genericCosts.splice(0, uncountedPaidMana.length)
+
+	return remainingCost.concat(genericCosts)
 }
 
 export function canAssignManaToSkill (skill: Skill, mana: ManaType[]) : boolean {
-	let unallocated = [...mana]
+	if (mana.length === 0) {
+		return false
+	}
 
-	// Check all the specific mana we have
-	for (let i = 0; i < skill.cost.length; i++) {
-		const cost = skill.cost[i]
+	let unallocated = [...mana]
+	const unpaidMana = getSkillRemainingCost(skill)
+	console.log('unallocated', unallocated.join(','))
+
+	// First go through all the non-generic costs and make sure that all of
+	// those have been assigned
+	const specific = unpaidMana.filter(x => x !== 'any')
+	for (let i = 0; i < specific.length; i++) {
+		console.log('=====')
+		console.log('i', i)
+		const cost = specific[i]
+		console.log('cost', cost)
 		if (cost === 'any') {
-			return
+			console.log('skip the any')
+			continue
 		}
 		const foundIdx = unallocated.findIndex(x => x === cost)
-		if (foundIdx === -1) {
-			return false
+		console.log('found', foundIdx)
+		if (foundIdx >= 0) {
+			unallocated.splice(foundIdx, 1)
 		}
 
-		unallocated.splice(foundIdx, 1)
 	}
 
-	const remaining = skill.cost.filter(x => x !== 'any')
+	if (unallocated.length === 0) {
+		return true
+	}
 
-	return unallocated.length >= remaining.length
+	const generic = unpaidMana.filter(x => x === 'any')
+	console.log('gen', generic)
+	console.log('unallocated', unallocated.join(','))
+	return generic.length > 0 && unallocated.length > 0
 }
 
-export function assignManaToSkill (skill: Skill, dice: ManaDie[]) {
+export function assignManaDiceToSkill (skill: Skill, dice: ManaDie[]) {
 	const mana = getDiceActiveManas(dice)
-	if (!canAssignManaToSkill(skill, mana)) {
-		return
-	}
+	dice.forEach(d => {
+		d.spent = true
+	})
+	assignManaToSkill(skill, mana)
+}
 
+export function assignManaToSkill (skill: Skill, mana: ManaType[]) {
 	const added : ManaType[] = []
 	mana.forEach((m) => {
 		skill.paidMana.push(m)

@@ -1,8 +1,8 @@
 import {Draft, produce} from "immer";
 import {ENEMY_TYPES} from "./consts";
 import {getRandomInt, rollDie} from "./random";
-import {ManaDie, ManaType, newManaDie} from "./mana";
-import {canAssignManaToSkill, newSkill, Skill} from "./skill";
+import {ManaDie, newManaDie} from "./mana";
+import {assignManaDiceToSkill, canAssignManaDiceToSkill, newSkill, Skill} from "./skill";
 
 export type Game = {
 	player: Player
@@ -101,13 +101,14 @@ export function newGame () : Game {
 		over: false,
 		logs: [],
 		manaDice: [
-			newManaDie(['ice', 'fire', 'ice', 'ice']),
-			newManaDie(['ice', 'ice', 'ice', 'light']),
-			newManaDie(['light', 'light', 'light', 'fire']),
+			newManaDie(['fire', 'fire', 'ice', 'ice', 'light']),
+			newManaDie(['fire', 'ice', 'ice', 'ice', 'light']),
+			newManaDie(['light', 'light', 'light', 'fire', 'ice']),
 		],
 		skills: [
 			newSkill('fireball'),
 			newSkill('ice_chains'),
+			newSkill('dawn_shield'),
 		]
 	}
 }
@@ -125,7 +126,7 @@ export function rerollEnemyDice (game: Game) : Game {
 	return produce<Game>(game,(draft: Draft<Game>) => {
 		draft.enemies.forEach((e) => {
 			const newer = rollDie(new Date().toISOString(), e.damageDie)
-			if (newer > e.damageRoll) {
+			if (e.damageRoll === null || newer > e.damageRoll) {
 				e.damageRoll = newer
 				addLog(draft, e.name + ' rerolled up to ' + newer)
 			}
@@ -178,9 +179,10 @@ export function assignMana (game: Game, skillId: string, selectedManaIndices: nu
 		const dice = selectedManaIndices.map((idx) => {
 			return draft.manaDice[idx]
 		})
-		if (!canAssignManaToSkill(skill, dice)) {
+		if (!canAssignManaDiceToSkill(skill, dice)) {
 			return
 		}
+		assignManaDiceToSkill(skill, dice)
 		addLog(draft, `Assigned ${dice}`)
 	})
 }

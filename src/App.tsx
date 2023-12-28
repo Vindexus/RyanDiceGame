@@ -1,19 +1,13 @@
 import {useEffect, useState} from 'react'
 import './App.css'
-import {
-	Game,
-	newGame,
-	newRound,
-	rerollEnemyDice,
-	rerollSelectedManaDice,
-	rollEnemyDice,
-	rollManaDice, assignMana
-} from "./lib/game";
+import {assignMana, Game, newGame, newRound, rerollSelectedManaDice, rollEnemyDice} from "./lib/game";
 import EnemyCard from "./components/EnemyCard";
 import CombatantHeader from "./components/CombatantHeader";
 import ManaDieC, {ManaIcon} from "./components/ManaDie";
 import {canCast} from "./lib/skill";
 import Logs from "./components/Logs";
+import {ManaType} from "./lib/mana";
+
 rollEnemyDice
 const styles = {
 	btn: `rounded bg-teal-800 text-sm px-4 py-2 bg-gray ms-1`
@@ -121,17 +115,29 @@ function App() {
 								}}>
 									<header>
 										<h3 className={'text-lg font-bold'}>{type.name}</h3>
-										<div className={'font-semibold'}>
-											Cost: {skill.cost.map((m, idx) => {
-												return <span className={'mana-cost'} key={idx}>
-													{m === 'any' ? 'x' : <ManaIcon type={m} />}
-												</span>
-											})} ({skill.paidMana.length
-												? skill.paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
-												: <em>no mana allocated</em>})
+										<div className={'flex w-full justify-between p-1 border'}>
+											<div className={'w-1/2'}>
+												<h2>Cost</h2>
+												<div className={'flex flex-row'}>
+													{skill.cost.map((mc, idx) => {
+														const m = mc as ManaType
+														return <span className={'mana-cost'} key={idx}>
+															{mc === 'any' ? <ManaIcon type={'any'} /> : <ManaIcon type={m} />}
+														</span>
+													})}
+												</div>
+											</div>
+											<div className={'w-1/2'}>
+												<h2>Paid</h2>
+												<div className={'flex flex-row'}>
+													{paidMana.length
+														? paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
+														: <em>no mana allocated</em>}
+												</div>
+											</div>
 										</div>
 									</header>
-									<div>
+									<div className={'text-lg'}>
 										{type.description}
 									</div>
 								</div>
