@@ -2,42 +2,45 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import {Texture} from "three";
+import { ManaDie } from '../lib/mana';
 
 type Face = {
 	texture: Texture
 }
 
 export type Props = {
-	faces?: string[]
+	die: ManaDie
 }
 
-
 export default function AnimatedDice (props: Props) {
-	const icons = props.faces || ['fire', 'ice', 'shock', 'death', 'earth', 'magic']
+	const faces = props.die.faces;
+  console.log('faces: ', faces);
+  // const rollResult = props.die.activeFaceIdx;
+  // const [activeFace, setActiveFace] = useState<ManaDieFace>();
 
-	while (icons.length < 6) {
-		icons.push('uncertainty') // TODO: Get a blank one
+	while (faces.length < 6) {
+		faces.push('uncertainty') // TODO: Get a blank one
 	}
 
   const canvasRef = useRef<HTMLDivElement>();
 
   // Constants
-  const defaultCameraX = 1;
-  const defaultCameraY = 1.5;
-  const defaultCameraZ = 1;
-  const floorWidth = 10;
+  const defaultCameraX = 0;
+  const defaultCameraY = 0;
+  const defaultCameraZ = 1.5;
+  // const floorWidth = 10;
   const dieWidth = 1;
 
   useEffect(() => {
-  	const div = canvasRef.current
+    const div = canvasRef.current
 
-  	if (!div) {
-  		return
+    if (!div) {
+      return;
 		}
 
     if (div.children.length > 0) {
       return;
-    };
+    }
 
     const sizes = {
       width: div.clientWidth,
@@ -83,11 +86,16 @@ export default function AnimatedDice (props: Props) {
      * Textures
      */
     const textureLoader = new THREE.TextureLoader();
-		const faces : Face[] = icons.map((fd) : Face => {
-			return {
-				texture: textureLoader.load('/textures/' + fd + '.png'),
-			}
-		})
+		const faceTextures : Face[] = faces.filter((face) => {
+      face.globes.length > 0
+      }).map((fd) : Face => {
+        console.log('fd:', fd);
+        const texturePath = '/textures/' + fd.globes[0].type + '.png'
+        console.log('texturePath: ', texturePath);
+		  	return {
+		  		texture: textureLoader.load('/textures/' + fd.globes[0].type + '.png'),
+		  	}
+		  })
 
     /**
      * Lights
@@ -112,15 +120,19 @@ export default function AnimatedDice (props: Props) {
     const planeGeometry = new THREE.PlaneGeometry(dieWidth, dieWidth)
 
     // Materials
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: '#5A4A46' });
+    // const floorMaterial = new THREE.MeshBasicMaterial({ color: '#5A4A46' });
 
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
-    const meshes = faces.map((face) => {
-    	const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
-    	return side
+    const meshes = faceTextures.map((face) => {
+      console.log('meshes.face: ', face);
+      const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
+      return side
 		})
+    
+    console.log('faceTextures: ', faceTextures)
+    // console.log('meshes: ', meshes)
 
     // Postition the planes to create a cube
     meshes[0].rotation.x = Math.PI * 0.5;
@@ -145,23 +157,24 @@ export default function AnimatedDice (props: Props) {
 
     die.add(...meshes);
 
-    // Minimum roations to reach all sides FROM dieSide1:
-    // die.rotation.y = Math.PI; // dieSide2
-    // die.rotation.y = Math.PI * 0.5; // dieSide3
-    // die.rotation.y = Math.PI * 2; // dieSide4
-    // die.rotation.y = - Math.PI * 0.5; // dieSide5
-    // die.rotation.x = Math.PI * 0.5; // dieSide6
+    die.position.y = -0.5;
+
+    // Minimum roations to reach all sides FROM meshes[0]
+    // die.rotation.y = Math.PI; // meshes[1]
+    // die.rotation.y = Math.PI * 0.5; // meshes[2]
+    // die.rotation.y = Math.PI * 2; // meshes[3]
+    // die.rotation.y = - Math.PI * 0.5; // meshes[4]
+    // die.rotation.x = Math.PI * 0.5; // meshes[5]
 
     scene.add(die);
 
     /**
      * Floor
-     */
+    */
+    // const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
 
-    /*const floor = new THREE.Mesh(new THREE.PlaneGeometry(floorWidth, floorWidth), floorMaterial);
-
-    floor.position.y = -1;
-    floor.rotation.x = - Math.PI * 0.5;*/
+    // floor.position.y = -1;
+    // floor.rotation.x = - Math.PI * 0.5;
 
     //scene.add(floor);
 
@@ -184,6 +197,15 @@ export default function AnimatedDice (props: Props) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (rollResult >= 0) {
+  //     console.log('rollResult: ', rollResult);
+  //   }
+  //   if (rollResult === 0) {
+
+  //   }
+  // }, [rollResult]);
 
   return <div style={{height: '100%', width: '100%'}} ref={canvasRef} />;
 }

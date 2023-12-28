@@ -4,7 +4,6 @@ import {assignMana, Game, newGame, newRound, rerollSelectedManaDice, rollEnemyDi
 import EnemyCard from "./components/EnemyCard";
 import CombatantHeader from "./components/CombatantHeader";
 import ManaDieC, {ManaIcon} from "./components/ManaDie";
-import AnimatedDice from "./components/AnimatedDice";
 import {canCast} from "./lib/skill";
 import Logs from "./components/Logs";
 import {ManaType} from "./lib/mana";
@@ -145,10 +144,6 @@ function App() {
 							})}
 						</section>
             <hr className={'divider'} />
-            <section>
-              <h3>Rolls</h3>
-                <AnimatedDice />
-            </section>
 					</div>
 					<aside className={'border p-2 w-1/3 mt-3'}>
 						<Logs game={game} />
