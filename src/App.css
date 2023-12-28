@@ -91,7 +91,7 @@ hr.divider {
     border-color: #535bf2;
 }
 
-.skill .mana-cost img {
-    width: 16px;
-    height: 16px;
+.skill .mana-icon img {
+    width: 24px;
+    height: 24px;
 }

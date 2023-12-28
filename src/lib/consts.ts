@@ -29,4 +29,16 @@ export const SKILL_TYPES : Record<SkillTypeKey, SkillType> = {
 		description: 'Deal ice damage to a target.',
 		cost: ['any', 'ice'],
 	},
+	dawn_shield: {
+		key: 'dawn_shield',
+		name: 'Dawn Shield',
+		description: 'Block incoming damage',
+		cost: ['light', 'any', 'any']
+	}
 }
+
+Object.keys(SKILL_TYPES).forEach((k) => {
+	if (SKILL_TYPES[k as SkillTypeKey].key !== k) {
+		throw new Error('wrong key')
+	}
+})

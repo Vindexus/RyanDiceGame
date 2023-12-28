@@ -3,7 +3,7 @@ import {SKILL_TYPES} from "./consts";
 
 export type ManaCost = 'any' | ManaType
 
-export type SkillTypeKey = 'fireball' | 'ice_chains'
+export type SkillTypeKey = 'fireball' | 'ice_chains' | 'dawn_shield'
 
 export type SkillType = {
 	key: SkillTypeKey
@@ -52,6 +52,7 @@ export function canAssignManaDiceToSkill (skill: Skill, dice: ManaDie[]) : boole
 	}
 
 	const mana = getDiceActiveManas(dice)
+	console.log('mana', mana)
 	const canAssignBasedOnMana = canAssignManaToSkill(skill, mana)
 	console.log('canAssignBasedOnMana', canAssignBasedOnMana, mana)
 	return canAssignBasedOnMana
@@ -98,30 +99,50 @@ export function getSkillRemainingCost (skill: Skill) : ManaCost[] {
 }
 
 export function canAssignManaToSkill (skill: Skill, mana: ManaType[]) : boolean {
+	if (mana.length === 0) {
+		return false
+	}
+
 	let unallocated = [...mana]
+	const unpaidMana = getSkillRemainingCost(skill)
+	console.log('unallocated', unallocated.join(','))
 
 	// First go through all the non-generic costs and make sure that all of
 	// those have been assigned
-	for (let i = 0; i < skill.cost.length; i++) {
-		const cost = skill.cost[i]
+	const specific = unpaidMana.filter(x => x !== 'any')
+	for (let i = 0; i < specific.length; i++) {
+		console.log('=====')
+		console.log('i', i)
+		const cost = specific[i]
+		console.log('cost', cost)
 		if (cost === 'any') {
+			console.log('skip the any')
 			continue
 		}
 		const foundIdx = unallocated.findIndex(x => x === cost)
-		if (foundIdx === -1) {
-			return false
+		console.log('found', foundIdx)
+		if (foundIdx >= 0) {
+			unallocated.splice(foundIdx, 1)
 		}
 
-		unallocated.splice(foundIdx, 1)
 	}
 
-	const remaining = skill.cost.filter(x => x === 'any')
-	return unallocated.length <= remaining.length
+	if (unallocated.length === 0) {
+		return true
+	}
+
+	const generic = unpaidMana.filter(x => x === 'any')
+	console.log('gen', generic)
+	console.log('unallocated', unallocated.join(','))
+	return generic.length > 0 && unallocated.length > 0
 }
 
 export function assignManaDiceToSkill (skill: Skill, dice: ManaDie[]) {
 	const mana = getDiceActiveManas(dice)
-	return assignManaToSkill(skill, mana)
+	dice.forEach(d => {
+		d.spent = true
+	})
+	assignManaToSkill(skill, mana)
 }
 
 export function assignManaToSkill (skill: Skill, mana: ManaType[]) {

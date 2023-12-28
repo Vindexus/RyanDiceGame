@@ -116,20 +116,29 @@ function App() {
 								}}>
 									<header>
 										<h3 className={'text-lg font-bold'}>{type.name}</h3>
-										<div className={'font-semibold'}>
-											<div className={'flex'}>
-												{skill.cost.map((mc, idx) => {
-													const m = mc as ManaType
-													return <span className={'mana-cost'} key={idx}>
-														{mc === 'any' ? 'x' : <ManaIcon type={m} />}
-													</span>
-												})} ({paidMana.length
-													? paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
-													: <em>no mana allocated</em>})
+										<div className={'flex w-full justify-between p-1 border'}>
+											<div className={'w-1/2'}>
+												<h2>Cost</h2>
+												<div className={'flex flex-row'}>
+													{skill.cost.map((mc, idx) => {
+														const m = mc as ManaType
+														return <span className={'mana-cost'} key={idx}>
+															{mc === 'any' ? <ManaIcon type={'any'} /> : <ManaIcon type={m} />}
+														</span>
+													})}
+												</div>
+											</div>
+											<div className={'w-1/2'}>
+												<h2>Paid</h2>
+												<div className={'flex flex-row'}>
+													{paidMana.length
+														? paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
+														: <em>no mana allocated</em>}
+												</div>
 											</div>
 										</div>
 									</header>
-									<div>
+									<div className={'text-lg'}>
 										{type.description}
 									</div>
 								</div>

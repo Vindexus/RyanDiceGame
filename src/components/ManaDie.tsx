@@ -1,5 +1,6 @@
-import {ManaDie, ManaDieFace, ManaType} from "../lib/mana";
+import {ManaDie, ManaDieFace} from "../lib/mana";
 import AnimatedDice from "./AnimatedDice";
+import {ManaCost} from "../lib/skill";
 
 type ManaDieProps = {
 	die: ManaDie
@@ -26,7 +27,7 @@ export default function ManaDieC (props: ManaDieProps) {
 	</div>
 }
 
-function getManaSymbol (type: ManaType) {
+function getManaSymbol (type: ManaCost) {
 	return <img src={'/textures/' + type + '.png'} />
 	switch (type) {
 		case "fire":
@@ -59,8 +60,8 @@ function ManaDieFaceC ({face, highlight}: {face: ManaDieFace, highlight: boolean
 	</div>
 }
 
-export function ManaIcon ({type}: {type: ManaType}) {
-	return <span className={'mana-' + type}>
+export function ManaIcon ({type}: {type: ManaCost}) {
+	return <span className={'mana-icon mana-' + type}>
 		{getManaSymbol(type)}
 	</span>
 }

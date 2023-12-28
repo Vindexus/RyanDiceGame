@@ -2,7 +2,7 @@ import {Draft, produce} from "immer";
 import {ENEMY_TYPES} from "./consts";
 import {getRandomInt, rollDie} from "./random";
 import {ManaDie, newManaDie} from "./mana";
-import {canAssignManaDiceToSkill, newSkill, Skill} from "./skill";
+import {assignManaDiceToSkill, canAssignManaDiceToSkill, newSkill, Skill} from "./skill";
 
 export type Game = {
 	player: Player
@@ -101,13 +101,14 @@ export function newGame () : Game {
 		over: false,
 		logs: [],
 		manaDice: [
-			newManaDie(['ice', 'fire', 'ice', 'ice']),
-			newManaDie(['ice', 'ice', 'ice', 'light']),
-			newManaDie(['light', 'light', 'light', 'fire']),
+			newManaDie(['fire', 'fire', 'ice', 'ice', 'light']),
+			newManaDie(['fire', 'ice', 'ice', 'ice', 'light']),
+			newManaDie(['light', 'light', 'light', 'fire', 'ice']),
 		],
 		skills: [
 			newSkill('fireball'),
 			newSkill('ice_chains'),
+			newSkill('dawn_shield'),
 		]
 	}
 }
@@ -181,6 +182,7 @@ export function assignMana (game: Game, skillId: string, selectedManaIndices: nu
 		if (!canAssignManaDiceToSkill(skill, dice)) {
 			return
 		}
+		assignManaDiceToSkill(skill, dice)
 		addLog(draft, `Assigned ${dice}`)
 	})
 }
