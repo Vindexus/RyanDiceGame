@@ -123,13 +123,15 @@ function App() {
 									<header>
 										<h3 className={'text-lg font-bold'}>{type.name}</h3>
 										<div className={'font-semibold'}>
-											Cost: {skill.cost.map((m, idx) => {
-												return <span className={'mana-cost'} key={idx}>
-													{m === 'any' ? 'x' : <ManaIcon type={m} />}
-												</span>
-											})} ({skill.paidMana.length
-												? skill.paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
-												: <em>no mana allocated</em>})
+											<div className={'flex'}>
+												{skill.cost.map((m, idx) => {
+													return <span className={'mana-cost'} key={idx}>
+														{m === 'any' ? 'x' : <ManaIcon type={m} />}
+													</span>
+												})} ({skill.paidMana.length
+													? skill.paidMana.map((pm, idx) => <ManaIcon type={pm} key={idx} />)
+													: <em>no mana allocated</em>})
+											</div>
 										</div>
 									</header>
 									<div>

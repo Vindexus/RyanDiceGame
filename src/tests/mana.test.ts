@@ -1,7 +1,7 @@
 import {expect, test} from 'vitest'
 import {getDiceActiveManas, getDieActiveManas, newManaDie} from "../lib/mana";
 
-test('skill can be cast', () => {
+test('get dice mana info', () => {
 	const die = newManaDie([])
 	die.faces[0] = {
 		globes: [
@@ -19,6 +19,7 @@ test('skill can be cast', () => {
 
 	const mana = getDieActiveManas(die)
 	expect(mana.length).toBe(3)
+	expect(mana.toString()).toBe('fire,ice,ice')
 
 	const ices = mana.filter(x => x === 'ice')
 	expect(ices.length).toBe(2)

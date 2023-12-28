@@ -2,7 +2,7 @@ import {Draft, produce} from "immer";
 import {ENEMY_TYPES} from "./consts";
 import {getRandomInt, rollDie} from "./random";
 import {ManaDie, ManaType, newManaDie} from "./mana";
-import {canAssignManaToSkill, newSkill, Skill} from "./skill";
+import {canAssignManaDiceToSkill, canAssignManaToSkill, newSkill, Skill} from "./skill";
 
 export type Game = {
 	player: Player
@@ -178,7 +178,7 @@ export function assignMana (game: Game, skillId: string, selectedManaIndices: nu
 		const dice = selectedManaIndices.map((idx) => {
 			return draft.manaDice[idx]
 		})
-		if (!canAssignManaToSkill(skill, dice)) {
+		if (!canAssignManaDiceToSkill(skill, dice)) {
 			return
 		}
 		addLog(draft, `Assigned ${dice}`)
