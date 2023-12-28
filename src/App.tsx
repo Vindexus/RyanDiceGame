@@ -12,7 +12,6 @@ import {
 import EnemyCard from "./components/EnemyCard";
 import CombatantHeader from "./components/CombatantHeader";
 import ManaDieC, {ManaIcon} from "./components/ManaDie";
-import AnimatedDice from "./components/AnimatedDice";
 import {canCast} from "./lib/skill";
 import Logs from "./components/Logs";
 rollEnemyDice
