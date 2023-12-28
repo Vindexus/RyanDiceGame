@@ -65,10 +65,11 @@ div.mana-die-spent {
 .mana-die-face {
     border-bottom: 2px solid transparent;
     transition: all 0.25s ease;
+    padding: 1px;
 }
 
 .mana-die-face.highlight {
-    border-color: white;
+    border-color: red;
 }
 
 h3 {
