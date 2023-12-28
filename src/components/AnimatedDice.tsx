@@ -11,7 +11,6 @@ export type Props = {
 	faces?: string[]
 }
 
-
 export default function AnimatedDice (props: Props) {
 	const icons = props.faces || ['fire', 'ice', 'shock', 'death', 'earth', 'magic']
 
@@ -25,19 +24,19 @@ export default function AnimatedDice (props: Props) {
   const defaultCameraX = 1;
   const defaultCameraY = 1.5;
   const defaultCameraZ = 1;
-  const floorWidth = 10;
+  // const floorWidth = 10;
   const dieWidth = 1;
 
   useEffect(() => {
-  	const div = canvasRef.current
+    const div = canvasRef.current
 
-  	if (!div) {
-  		return
+    if (!div) {
+      return
 		}
 
     if (div.children.length > 0) {
       return;
-    };
+    }
 
     const sizes = {
       width: div.clientWidth,
@@ -112,14 +111,14 @@ export default function AnimatedDice (props: Props) {
     const planeGeometry = new THREE.PlaneGeometry(dieWidth, dieWidth)
 
     // Materials
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: '#5A4A46' });
+    // const floorMaterial = new THREE.MeshBasicMaterial({ color: '#5A4A46' });
 
     // Constructing the die out of individual Planes
     const die = new THREE.Group();
 
     const meshes = faces.map((face) => {
-    	const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
-    	return side
+      const side = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: face.texture}));
+      return side
 		})
 
     // Postition the planes to create a cube
