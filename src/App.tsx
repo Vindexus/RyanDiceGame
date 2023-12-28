@@ -14,6 +14,7 @@ import CombatantHeader from "./components/CombatantHeader";
 import ManaDieC, {ManaIcon} from "./components/ManaDie";
 import AnimatedDice from "./components/AnimatedDice";
 import {canCast} from "./lib/skill";
+import Logs from "./components/Logs";
 rollEnemyDice
 const styles = {
 	btn: `rounded bg-teal-800 text-sm px-4 py-2 bg-gray ms-1`
@@ -59,7 +60,7 @@ function App() {
 					</span>
 					<div>
 						<button className={styles.btn} type={'button'} onClick={() => {
-							if (game.enemies[0].roll === null) {
+							if (game.enemies[0].damageRoll === null) {
 								return
 							}
 							if (selectedManaDice.length === 0) {
@@ -144,10 +145,7 @@ function App() {
             </section>
 					</div>
 					<aside className={'border p-2 w-1/3 mt-3'}>
-						<h3 className={'text-lg'}>Logs</h3>
-						{game.logs.map((l, i) => {
-							return <p key={i}>{l}</p>
-						})}
+						<Logs game={game} />
 					</aside>
 				</main>
 			</div>
